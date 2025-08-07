@@ -1,0 +1,20 @@
+name: publish
+
+on:
+  workflow_dispatch:
+  pull_request:
+  push:
+
+permissions:
+  packages: write
+
+jobs:
+  release:
+    name: publish
+    runs-on: ubuntu-latest
+    steps:
+      - uses: dagger/dagger-for-github@8.0.0
+      - name: publish
+	run: dagger -c 'container | from alpine | with-registry-auth ghcr.io/kpenfound/github-webhooks ${{ github.actor }} env://GH_TOKEN | publish ghcr.io/kpenfound/github-webhooks:latest'
+        env:
+          GH_TOKEN: ${{ secrets.GITHUB_TOKEN }}
